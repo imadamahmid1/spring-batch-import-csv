@@ -1,0 +1,27 @@
+
+# Mongo Properties
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+  batch:
+    initialize-schema: ALWAYS
+    job:
+      enabled: false
+#  autoconfigure:
+#    exclude:
+#      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
+#      - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
+#      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+#      - org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
+  data:
+    jpa:
+      repository:
+        enabled: false
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/importCSV?readPreference=primary&appname=MongoDB%20Compass&ssl=false}
+      auto-index-creation: true
+
+server:
+  port: 9292
+
+
