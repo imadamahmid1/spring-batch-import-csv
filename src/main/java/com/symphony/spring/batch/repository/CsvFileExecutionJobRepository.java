@@ -10,5 +10,6 @@ import java.util.List;
 public interface CsvFileExecutionJobRepository extends MongoRepository<CsvFileExecutionJob, String> {
 
     List<CsvFileExecutionJob> findByFileId(String fileId);
+    List<CsvFileExecutionJob> findByJobInstanceId(Long jobInstanceId);
 
 }

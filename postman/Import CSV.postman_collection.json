@@ -167,6 +167,65 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Job API",
+			"item": [
+				{
+					"name": "Stop job",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9292/job/:jobId/stop",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9292",
+							"path": [
+								"job",
+								":jobId",
+								"stop"
+							],
+							"variable": [
+								{
+									"key": "jobId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Restart job",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9292/job/:jobId/stop",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9292",
+							"path": [
+								"job",
+								":jobId",
+								"stop"
+							],
+							"variable": [
+								{
+									"key": "jobId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"variable": [

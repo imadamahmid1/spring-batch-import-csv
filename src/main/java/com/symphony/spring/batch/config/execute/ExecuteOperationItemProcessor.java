@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @StepScope
@@ -36,6 +37,12 @@ public class ExecuteOperationItemProcessor implements ItemProcessor<Operation, O
                 .fileExecutionJobId(csvFileExecutionJobId)
                 .operationType(OperationType.valueOf(op.getOperationType()))
                 .build();
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         if (op.getAdvisorId().contains("fail")) {
             log.error("Failed entitling operation | advisorId=[{}] operationId=[{}]", op.getAdvisorId(), op.getId());

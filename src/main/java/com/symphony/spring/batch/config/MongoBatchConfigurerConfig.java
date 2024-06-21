@@ -5,8 +5,15 @@ import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import eu.europeana.batch.config.MongoBatchConfigurer;
 import eu.europeana.batch.entity.PackageMapper;
+import eu.europeana.batch.repository.JobExecutionRepository;
+import eu.europeana.batch.repository.JobInstanceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
+import org.springframework.batch.core.configuration.support.MapJobRegistry;
+import org.springframework.batch.core.repository.dao.JobExecutionDao;
+import org.springframework.batch.core.repository.dao.JobInstanceDao;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -34,6 +41,23 @@ public class MongoBatchConfigurerConfig {
     @Bean
     public MongoBatchConfigurer mongoBatchConfigurer() {
         return new MongoBatchConfigurer(batchDatastore(), new SimpleAsyncTaskExecutor());
+    }
+
+    @Bean
+    public JobExecutionDao jobExecutionDao() {
+        return new JobExecutionRepository(batchDatastore());
+    }
+
+    @Bean
+    public JobInstanceDao jobInstanceDao() {
+        return new JobInstanceRepository(batchDatastore());
+    }
+
+    @Bean
+    public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor(JobRegistry jobRegistry) {
+        JobRegistryBeanPostProcessor postProcessor = new JobRegistryBeanPostProcessor();
+        postProcessor.setJobRegistry(jobRegistry);
+        return postProcessor;
     }
 
 }
