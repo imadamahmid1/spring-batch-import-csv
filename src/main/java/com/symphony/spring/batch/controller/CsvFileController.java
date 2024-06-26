@@ -16,7 +16,6 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,7 +50,8 @@ public class CsvFileController {
 
     @PostMapping("/file/{fileId}/execute")
     public ResponseEntity<CsvFileExecutionJob> executeCsvFileOperations(@PathVariable String fileId) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException, NoSuchJobException, NoSuchJobExecutionException {
-        return executeCsvFileJobService.validateImportingOfFileAndRunExecuteCsvFileJob(fileId);
+        CsvFileExecutionJob csvFileExecutionJob = executeCsvFileJobService.validateImportingOfFileAndRunExecuteCsvFileJob(fileId);
+        return ResponseEntity.ok(csvFileExecutionJob);
     }
 
 

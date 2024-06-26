@@ -38,11 +38,11 @@ public class ExecuteOperationItemProcessor implements ItemProcessor<Operation, O
                 .operationType(OperationType.valueOf(op.getOperationType()))
                 .build();
 
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            TimeUnit.SECONDS.sleep(1);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         if (op.getAdvisorId().contains("fail")) {
             log.error("Failed entitling operation | advisorId=[{}] operationId=[{}]", op.getAdvisorId(), op.getId());

@@ -21,13 +21,11 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.batch.core.repository.dao.JobExecutionDao;
-import org.springframework.data.util.Pair;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -57,25 +55,14 @@ public class ExecuteCsvFileJobService {
      * @throws NoSuchJobExecutionException
      * @throws NoSuchJobException
      */
-    public ResponseEntity<CsvFileExecutionJob> validateImportingOfFileAndRunExecuteCsvFileJob(String fileId) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, NoSuchJobException {
+    public CsvFileExecutionJob validateImportingOfFileAndRunExecuteCsvFileJob(String fileId) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException, NoSuchJobExecutionException, NoSuchJobException {
         CsvFile csvFileMetadata = fileRepository.findById(fileId).get();
         validateFileWasSuccessfullyImportedAndParsed(csvFileMetadata);
 
         List<CsvFileExecutionJob> byFileId = csvExecutionJobRepository.findByFileId(fileId);
-        CsvFileExecutionJob csvFileExecutionJob;
-        if (CollectionUtils.isEmpty(byFileId)) {
-            // if no execute operation job instance was created for the file Id create one!
-            // Job instance (Corresponds CsvFileExecution in our database) -> (is Linked to a)  List of Job Executions (each time we run the Job Instance will start a new Job Execution)
-            // For each CSV file we will create a new Job instance of the "executeCsvFile job" with the appropriate arguments.
-            // This Job instance will have an Execution Job everytime the admin tries to execute this job.
-            csvFileExecutionJob = createNewCsvFileExecutionJob(fileId);
-        } else {
-            // If an execution instance was already created and its execution stopped, restart it.
-            csvFileExecutionJob = byFileId.get(0);
-            restartExecutionJobInstance(csvFileExecutionJob.getJobInstanceId());
-        }
+        CsvFileExecutionJob csvFileExecutionJob = createNewCsvFileExecutionJob(fileId);
 
-        return ResponseEntity.ok(csvFileExecutionJob);
+        return csvFileExecutionJob;
     }
 
 
@@ -93,6 +80,7 @@ public class ExecuteCsvFileJobService {
         CsvFileExecutionJob csvFileExecutionJob;
         csvFileExecutionJob = csvExecutionJobRepository.save(CsvFileExecutionJob.builder()
                 .fileId(fileId)
+                .isExecuted(false)
                 .build());
         JobParameters jobParameters = new JobParametersBuilder()
                 .addString("fileId", fileId)
@@ -107,27 +95,29 @@ public class ExecuteCsvFileJobService {
         return csvFileExecutionJob;
     }
 
-    public Long restartExecutionJobInstance(Long jobInstanceId) throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException, NoSuchJobException, JobRestartException, JobParametersInvalidException {
-        List<JobExecution> jobExecutions = jobExecutionDao.findJobExecutions(new JobInstance(jobInstanceId, ".."));
-        // restart any job execution
-        Long newJobInstanceId = jobOperator.restart(jobExecutions.get(0).getId());
-        return newJobInstanceId;
+    public CsvFileExecutionJob restartExecutionJobInstance(Long jobInstanceId) throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException, NoSuchJobException, JobRestartException, JobParametersInvalidException, JobExecutionAlreadyRunningException {
+        List<CsvFileExecutionJob> byJobInstanceId = csvExecutionJobRepository.findByJobInstanceId(jobInstanceId);
+
+
+        return validateImportingOfFileAndRunExecuteCsvFileJob(byJobInstanceId.get(0).getFileId());
     }
 
-    public List<Pair> stopExecutionJobExecutions(Long jobInstanceId) {
+    public Map<String, Boolean> stopExecutionJobExecutions(Long jobInstanceId) {
         List<JobExecution> jobExecutions = jobExecutionDao.findJobExecutions(new JobInstance(jobInstanceId, "" + jobInstanceId));
-        List<Pair> results = jobExecutions.stream().map(job -> {
+        Map<String, Boolean> jobMap = new HashMap<>();
+        jobExecutions.stream().forEach(job -> {
             try {
                 // In order to make sure the job is abandoned because if you try to stop a job multiple times it might fail
                 //  we can also add: jobOperator.abandon(jobExecutions.get(0).getId());
 
-                return Pair.of(job.getId(), jobOperator.stop(job.getId()));
+                jobMap.put("isStopped", jobOperator.stop(job.getId()));
             } catch (Exception e) {
                 log.error("Stopping Job error | jobInstanceId=[{}]", jobInstanceId);
-                return Pair.of(job.getId(), false);
+                jobMap.put("isStopped", false);
             }
-        }).collect(Collectors.toList());
-        return results;
+        });
+
+        return jobMap;
     }
 
 
