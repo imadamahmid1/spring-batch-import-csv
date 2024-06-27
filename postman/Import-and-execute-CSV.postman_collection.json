@@ -10,7 +10,7 @@
 			"name": "File API",
 			"item": [
 				{
-					"name": "Import new CSV",
+					"name": "Import Medium CSV (success import + exec)",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -20,7 +20,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/Users/imad.amahmid/Desktop/myImport.txt"
+									"src": "/Users/imad.amahmid/Desktop/sampleCsv/meduim.csv"
 								}
 							]
 						},
@@ -29,7 +29,7 @@
 					"response": []
 				},
 				{
-					"name": "Import new CSV Error",
+					"name": "Import Big CSV with parsing errors",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -39,7 +39,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/Users/imad.amahmid/Desktop/wrongCsv.txt"
+									"src": "/Users/imad.amahmid/Documents/batch-files/sampleCsv/big.csv"
 								}
 							]
 						},
@@ -48,64 +48,7 @@
 					"response": []
 				},
 				{
-					"name": "Import new CSV successful import with exec failure",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "/Users/imad.amahmid/Desktop/wrongCsv.txt"
-								}
-							]
-						},
-						"url": "http://localhost:9292/importCsvFile"
-					},
-					"response": []
-				},
-				{
-					"name": "Import new Medium CSV",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "/Users/imad.amahmid/Desktop/wrongCsv.txt"
-								}
-							]
-						},
-						"url": "http://localhost:9292/importCsvFile"
-					},
-					"response": []
-				},
-				{
-					"name": "Import new Huuuge CSV",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "/Users/imad.amahmid/Desktop/wrongCsv.txt"
-								}
-							]
-						},
-						"url": "http://localhost:9292/importCsvFile"
-					},
-					"response": []
-				},
-				{
-					"name": "Get CSV file Details",
+					"name": "Retrieve CSV file metadata and its execution Details",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -131,7 +74,7 @@
 					"response": []
 				},
 				{
-					"name": "Get All CSV files",
+					"name": "Retrieve all CSV files metadata",
 					"request": {
 						"method": "GET",
 						"header": [],
